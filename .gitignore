@@ -1,0 +1,20 @@
+# 环境变量文件
+.env
+
+# Python 缓存文件
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Excel 临时文件
+~$*.xlsx
+~$*.xls
+
+# IDE 文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 日志文件
+*.log
