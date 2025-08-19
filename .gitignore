@@ -18,3 +18,8 @@ __pycache__/
 
 # 日志文件
 *.log
+
+# 编译产物
+dist/
+build/
+*.spec

@@ -13,6 +13,8 @@ import os
 import sys
 from datetime import datetime
 import numpy as np
+import glob
+import re
 
 # 加载 .env 文件中的环境变量
 load_dotenv()
@@ -186,50 +188,107 @@ def sync_excel():
     
     print("\n所有表格同步完成！")
 
+def get_config_name_from_file(config_file):
+    """从配置文件名生成友好的显示名称"""
+    # 移除.json扩展名
+    name = os.path.splitext(config_file)[0]
+    
+    # 定义名称映射规则
+    name_mappings = {
+        'memo-bh-gov': '博浩政企数据同步',
+        'memo-bh-star': '博浩卫星数据同步', 
+        'memo-bh-ywl': '博浩云未来数据同步',
+        'memo-bh-yxd': '博浩云现代数据同步'
+    }
+    
+    # 如果有预定义的映射，使用映射名称，否则使用文件名
+    return name_mappings.get(name, name.replace('-', ' ').replace('_', ' ').title())
+
+def get_token_env_from_file(config_file):
+    """从配置文件名生成对应的环境变量名"""
+    # 移除.json扩展名
+    name = os.path.splitext(config_file)[0]
+    
+    # 统一使用自动化规则生成环境变量名
+    # 格式: SEATABLE_{NAME}_TOKEN
+    env_name = name.upper().replace('-', '_').replace(' ', '_')
+    return f"SEATABLE_{env_name}_TOKEN"
+
+def discover_config_files():
+    """自动发现目录下的JSON配置文件"""
+    # 查找当前目录下所有.json文件
+    json_files = glob.glob("*.json")
+    
+    # 过滤掉可能不是配置文件的json文件（比如package.json等）
+    config_files = []
+    for json_file in json_files:
+        try:
+            # 尝试读取文件，检查是否包含必要的配置字段
+            with open(json_file, 'r', encoding='utf-8') as f:
+                config_data = json.load(f)
+                
+            # 检查是否包含必要的配置字段
+            if 'tables' in config_data and 'excel_config' in config_data:
+                config_files.append(json_file)
+        except (json.JSONDecodeError, KeyError, FileNotFoundError):
+            # 如果不是有效的配置文件，跳过
+            continue
+    
+    return sorted(config_files)
+
 def select_configuration():
     """选择配置文件"""
     print("\n===== Excel同步任务选择 =====")
     
-    config_options = {
-        1: {
-            "name": "博浩政企数据同步",
-            "config_file": "memo-bh-gov.json",
-            "api_token_env": "SEATABLE_BH_GOV_TOKEN"
-        },
-        2: {
-            "name": "博浩卫星数据同步",
-            "config_file": "memo-bh-star.json",
-            "api_token_env": "SEATABLE_BH_STAR_TOKEN"
-        },
-        3: {
-            "name": "博浩云未来数据同步",
-            "config_file": "memo-bh-ywl.json",
-            "api_token_env": "SEATABLE_BH_YWL_TOKEN"
-        },
-        4: {
-            "name": "博浩云现代数据同步",
-            "config_file": "memo-bh-yxd.json",
-            "api_token_env": "SEATABLE_BH_YXD_TOKEN"
-        },
-        0: {
-            "name": "退出程序",
-            "config_file": None,
-            "api_token_env": None
+    # 自动发现配置文件
+    config_files = discover_config_files()
+    
+    if not config_files:
+        print("错误：未找到有效的JSON配置文件")
+        print("请确保当前目录下包含有效的配置文件（*.json）")
+        sys.exit(1)
+    
+    # 构建配置选项
+    config_options = {}
+    
+    # 添加配置文件选项
+    for i, config_file in enumerate(config_files, 1):
+        config_name = get_config_name_from_file(config_file)
+        token_env = get_token_env_from_file(config_file)
+        
+        config_options[i] = {
+            "name": config_name,
+            "config_file": config_file,
+            "api_token_env": token_env
         }
-        # 可以在这里添加更多配置选项
+    
+    # 添加退出选项
+    config_options[0] = {
+        "name": "退出程序",
+        "config_file": None,
+        "api_token_env": None
     }
     
     # 显示选项
+    print(f"\n发现 {len(config_files)} 个配置文件：")
     for key, value in config_options.items():
         if key == 0:
             print(f"\n{key}. {value['name']}")
         else:
-            print(f"{key}. {value['name']}")
+            print(f"{key}. {value['name']} ({value['config_file']})")
     
     # 获取用户选择
     while True:
         try:
-            choice = int(input("\n请选择要执行的同步任务 (1): "))
+            default_choice = 1 if config_files else 0
+            choice_input = input(f"\n请选择要执行的同步任务 ({default_choice}): ").strip()
+            
+            # 如果用户直接按回车，使用默认选择
+            if not choice_input:
+                choice = default_choice
+            else:
+                choice = int(choice_input)
+                
             if choice in config_options:
                 break
             else:
@@ -248,6 +307,7 @@ def select_configuration():
     selected_config = config_options[choice]
     print(f"\n已选择: {selected_config['name']}")
     print(f"配置文件: {selected_config['config_file']}")
+    print(f"环境变量: {selected_config['api_token_env']}")
     
     return selected_config
 
