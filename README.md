@@ -430,11 +430,11 @@ excel-sea-sync/
 如果您需要帮助或有任何问题，请：
 - 查看本README的常见问题部分
 - 创建GitHub Issue
-- 发送邮件至：[your-email@example.com]
+- 发送邮件至：[jerry.zhanghui@gmail.com]
 
 ## 🔄 更新日志
 
-### v1.0.0 (2025-01-XX)
+### v1.0.0 (2025-08-20)
 - 初始版本发布
 - 支持Excel到SeaTable的数据同步
 - 多项目配置支持
