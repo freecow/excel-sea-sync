@@ -1,0 +1,43 @@
+{
+  "chunk_size": 300,
+  "excel_config": {
+    "file_path": "/path/to/your/excel/file.xlsx"
+  },
+  "tables": [
+    {
+      "seatable": {
+        "table_name": "your_table_name",
+        "name_column": "unique_identifier_column"
+      },
+      "excel_sheet": "sheet_name",
+      "start_row": 1,
+      "field_mappings": {
+        "column_a": "mapped_field_a",
+        "column_b": "mapped_field_b",
+        "column_c": "mapped_field_c"
+      },
+      "data_types": {
+        "numeric_field": "number",
+        "date_field": "date",
+        "text_field": "text"
+      }
+    },
+    {
+      "seatable": {
+        "table_name": "another_table",
+        "name_column": "reference_id"
+      },
+      "excel_sheet": "another_sheet",
+      "start_row": 1,
+      "field_mappings": {
+        "id_field": "id_field",
+        "amount_field": "amount_field",
+        "date_field": "date_field"
+      },
+      "data_types": {
+        "amount_field": "number",
+        "date_field": "date"
+      }
+    }
+  ]
+}

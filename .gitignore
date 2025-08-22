@@ -23,3 +23,6 @@ __pycache__/
 dist/
 build/
 *.spec
+
+# 配置文件（包含敏感信息）
+memo-*.json
