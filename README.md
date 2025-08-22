@@ -44,10 +44,10 @@
    SEATABLE_SERVER_URL=https://cloud.seatable.cn
    
    # 不同项目的API Token
-   SEATABLE_BH_GOV_TOKEN=你的政企项目token
-   SEATABLE_BH_STAR_TOKEN=你的卫星项目token
-   SEATABLE_BH_YWL_TOKEN=你的云未来项目token
-   SEATABLE_BH_YXD_TOKEN=你的云现代项目token
+   SEATABLE_PROJECT_A_TOKEN=your_project_a_token
+   SEATABLE_PROJECT_B_TOKEN=your_project_b_token
+   SEATABLE_PROJECT_C_TOKEN=your_project_c_token
+   SEATABLE_PROJECT_D_TOKEN=your_project_d_token
    ```
 
 3. **运行程序**
@@ -89,19 +89,16 @@
 | 变量名 | 说明 | 示例 |
 |--------|------|------|
 | `SEATABLE_SERVER_URL` | SeaTable服务器地址 | `https://cloud.seatable.cn` |
-| `SEATABLE_BH_GOV_TOKEN` | 博浩政企项目API Token | `your_token_here` |
-| `SEATABLE_BH_STAR_TOKEN` | 博浩卫星项目API Token | `your_token_here` |
-| `SEATABLE_BH_YWL_TOKEN` | 博浩云未来项目API Token | `your_token_here` |
-| `SEATABLE_BH_YXD_TOKEN` | 博浩云现代项目API Token | `your_token_here` |
+| `SEATABLE_PROJECT_A_TOKEN` | 项目A的API Token | `your_token_here` |
+| `SEATABLE_PROJECT_B_TOKEN` | 项目B的API Token | `your_token_here` |
+| `SEATABLE_PROJECT_C_TOKEN` | 项目C的API Token | `your_token_here` |
+| `SEATABLE_PROJECT_D_TOKEN` | 项目D的API Token | `your_token_here` |
 
 ### JSON配置文件
 
-项目包含四个预配置的JSON文件：
+项目支持多个配置文件，每个文件对应一个数据同步任务。
 
-- `memo-bh-gov.json` - 博浩政企数据同步配置
-- `memo-bh-star.json` - 博浩卫星数据同步配置
-- `memo-bh-ywl.json` - 博浩云未来数据同步配置
-- `memo-bh-yxd.json` - 博浩云现代数据同步配置
+参考 `sample.json.example` 文件创建你自己的配置文件。
 
 #### 配置文件结构
 
@@ -114,18 +111,18 @@
   "tables": [
     {
       "seatable": {
-        "table_name": "目标表名",
-        "name_column": "主键列名"
+        "table_name": "target_table_name",
+        "name_column": "primary_key_column"
       },
-      "excel_sheet": "Excel工作表名",
+      "excel_sheet": "excel_sheet_name",
       "start_row": 1,
       "field_mappings": {
-        "Excel列名1": "SeaTable字段名1",
-        "Excel列名2": "SeaTable字段名2"
+        "excel_column_1": "seatable_field_1",
+        "excel_column_2": "seatable_field_2"
       },
       "data_types": {
-        "SeaTable字段名1": "date",
-        "SeaTable字段名2": "number"
+        "seatable_field_1": "date",
+        "seatable_field_2": "number"
       }
     }
   ]
@@ -138,9 +135,9 @@
 |------|------|------|------|
 | `chunk_size` | 分批上传的数据量 | 数字 | `300` |
 | `excel_config.file_path` | Excel文件完整路径 | 字符串 | `/path/to/file.xlsx` |
-| `seatable.table_name` | SeaTable中的目标表名 | 字符串 | `合同档案` |
-| `seatable.name_column` | 主键列名（用于标识） | 字符串 | `BH合同编号` |
-| `excel_sheet` | Excel中的工作表名 | 字符串 | `合同档案` |
+| `seatable.table_name` | SeaTable中的目标表名 | 字符串 | `contract_records` |
+| `seatable.name_column` | 主键列名（用于标识） | 字符串 | `contract_id` |
+| `excel_sheet` | Excel中的工作表名 | 字符串 | `contracts` |
 | `start_row` | 数据开始行号（1开始） | 数字 | `1` |
 | `field_mappings` | Excel列到SeaTable字段的映射 | 对象 | 见上方示例 |
 | `data_types` | 字段数据类型定义 | 对象 | `{"字段名": "date"}` |
@@ -165,10 +162,10 @@
    程序会显示可用的同步任务菜单：
    ```
    ===== Excel同步任务选择 =====
-   1. 博浩政企数据同步
-   2. 博浩卫星数据同步
-   3. 博浩云未来数据同步
-   4. 博浩云现代数据同步
+   1. 项目A数据同步
+   2. 项目B数据同步
+   3. 项目C数据同步
+   4. 项目D数据同步
    
    0. 退出程序
    
@@ -191,29 +188,29 @@
 $ ./excel-sea-sync
 
 ===== Excel同步任务选择 =====
-1. 博浩政企数据同步
-2. 博浩卫星数据同步
-3. 博浩云未来数据同步
-4. 博浩云现代数据同步
+1. 项目A数据同步
+2. 项目B数据同步
+3. 项目C数据同步
+4. 项目D数据同步
 
 0. 退出程序
 
 请选择要执行的同步任务 (1): 1
 
-已选择: 博浩政企数据同步
-配置文件: memo-bh-gov.json
+已选择: 项目A数据同步
+配置文件: project-a-config.json
 
-开始同步表格: 合同档案
-Excel工作表: 合同档案
-Found 1500 rows to delete in table '合同档案'
-Table '合同档案' has been successfully cleared.
-Reading Excel sheet: 合同档案
+开始同步表格: target_table
+Excel工作表: source_sheet
+Found 1500 rows to delete in table 'target_table'
+Table 'target_table' has been successfully cleared.
+Reading Excel sheet: source_sheet
 Processing data...
 Inserting 850 rows into SeaTable...
-Table '合同档案' sync completed successfully!
+Table 'target_table' sync completed successfully!
 
-开始同步表格: 订单档案
-Excel工作表: 订单档案
+开始同步表格: another_table
+Excel工作表: another_sheet
 ...
 
 所有表格同步完成！
@@ -223,9 +220,9 @@ Excel工作表: 订单档案
 
 ### 创建新的配置文件
 
-1. **复制现有配置**
+1. **复制示例配置**
    ```bash
-   cp memo-bh-gov.json my-project.json
+   cp sample.json.example my-project.json
    ```
 
 2. **修改配置内容**
@@ -262,7 +259,7 @@ Excel工作表: 订单档案
 1. **字段名完全匹配**
    ```json
    "field_mappings": {
-     "Excel中的列名": "SeaTable中的字段名"
+     "excel_column_name": "seatable_field_name"
    }
    ```
 
@@ -274,9 +271,9 @@ Excel工作表: 订单档案
 3. **数据类型处理**
    ```json
    "data_types": {
-     "金额字段": "number",      // 自动添加千分位逗号
-     "日期字段": "date",        // 转换为YYYY-MM-DD格式
-     "普通字段": ""             // 不指定类型，保持原始文本
+     "amount_field": "number",      // 自动添加千分位逗号
+     "date_field": "date",        // 转换为YYYY-MM-DD格式
+     "text_field": ""             // 不指定类型，保持原始文本
    }
    ```
 
@@ -311,7 +308,7 @@ ERROR: No such file or directory: '/path/to/file.xlsx'
 
 **问题**：某些字段数据丢失
 ```
-KeyError: '字段名不存在'
+KeyError: 'field_name_not_found'
 ```
 
 **解决方案**：
@@ -395,10 +392,8 @@ excel-sea-sync/
 ├── requirements.txt           # Python依赖
 ├── .env.example              # 环境变量模板
 ├── README.md                 # 项目文档
-├── memo-bh-gov.json          # 政企项目配置
-├── memo-bh-star.json         # 卫星项目配置
-├── memo-bh-ywl.json          # 云未来项目配置
-├── memo-bh-yxd.json          # 云现代项目配置
+├── sample.json.example       # 配置文件示例
+├── .gitignore                # Git忽略文件
 ├── build_standalone.py       # 通用构建脚本
 ├── build_windows_ci.py       # Windows构建脚本
 └── .github/
